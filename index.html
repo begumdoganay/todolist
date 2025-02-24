@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Task Manager</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600&family=Libre+Baskerville&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            /* Font Variables */
+            --font-elegant: 'Playfair Display', 'Cormorant Garamond', serif;
+            --font-body: 'Libre Baskerville', 'Georgia', serif;
+
+            /* Pastel Theme Colors */
+            --pastel-pink: #ffd6e0;
+            --pastel-blue: #c1efff;
+            --pastel-green: #c9f2d0;
+            --pastel-yellow: #fff4d4;
+            --pastel-purple: #e7d6ff;
+            --pastel-orange: #ffe0d0;
+            
+            /* Default Theme */
+            --bg-primary: #fff9fb;
+            --bg-secondary: #ffffff;
+            --text-primary: #4a4a4a;
+            --text-secondary: #717171;
+            --accent: #9b6b9e;
+            --border: #f0e4e7;
+            
+            /* Priority Colors */
+            --priority-high: #ff9eaa;
+            --priority-medium: #ffd093;
+            --priority-low: #97e1a3;
+        }
+
+        /* Theme Variations */
+        .theme-evening {
+            --bg-primary: #e7d6ff;
+            --bg-secondary: #f9f5ff;
+            --accent: #7c5295;
+        }
+
+        .theme-ocean {
+            --bg-primary: #c1efff;
+            --bg-secondary: #f5fbff;
+            --accent: #5b8ba7;
+        }
+
+        .theme-spring {
+            --bg-primary: #d8f3dc;
+            --bg-secondary: #f8fff9;
+            --accent: #52916c;
+        }
+
+        .theme-lavender {
+            --bg-primary: #e9e0ff;
+            --bg-secondary: #f9f5ff;
+            --accent: #8a6fb8;
+        }
+
+        .theme-sunset {
+            --bg-primary: #ffe8e0;
+            --bg-secondary: #fff8f5;
+            --accent: #d17f6b;
+        }
+
+        .theme-mint {
+            --bg-primary: #e0fff4;
+            --bg-secondary: #f5fffc;
+            --accent: #5fb8a0;
+        }
+
+        .theme-peach {
+            --bg-primary: #ffe8d6;
+            --bg-secondary: #fff8f5;
+            --accent: #d1916b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-secondary);
+            font-family: var(--font-elegant);
+        }
+
+        .theme-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .language-selector .form-input {
+            min-width: 150px;
+        }
+
+        .task-form {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-location-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-family: var(--font-elegant);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(155, 107, 158, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: var(--font-elegant);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 107, 158, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid, .time-location-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .theme-selector {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls">
+            <div class="theme-selector">
+                <button class="theme-btn active" data-theme="default">🌸 Pastel</button>
+                <button class="theme-btn" data-theme="evening">🌙 Evening</button>
+                <button class="theme-btn" data-theme="ocean">🌊 Ocean</button>
+                <button class="theme-btn" data-theme="spring">🌱 Spring</button>
+                <button class="theme-btn" data-theme="lavender">💜 Lavender</button>
+                <button class="theme-btn" data-theme="sunset">🌅 Sunset</button>
+                <button class="theme-btn" data-theme="mint">🌿 Mint</button>
+                <button class="theme-btn" data-theme="peach">🍑 Peach</button>
+            </div>
+
+            <div class="language-selector">
+                <select class="form-input" id="languageSelect" onchange="changeLanguage(this.value)">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+        </div>
+
+        <form class="task-form" id="taskForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" id="nameLabel">Task Name</label>
+                    <input type="text" class="form-input" id="taskName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="projectLabel">Project</label>
+                    <select class="form-input" id="taskProject" required>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="education">Education</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="time-location-grid">
+                <div class="form-group">
+                    <label class="form-label" id="timeLabel">Start Time</label>
+                    <input type="time" class="form-input" id="taskTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="locationLabel">Location</label>
+                    <select class="form-input" id="taskLocation" required>
+                        <option value="office">Office</option>
+                        <option value="home">Home</option>
+                        <option value="remote">Remote</option>
+                        <option value="meeting">Meeting Room</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" id="priorityLabel">Priority</label>
+                    <select class="form-input" id="taskPriority" required>
+                        <option value="low">Low Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <i class="fas fa-plus"></i>
+                Add Task
+            </button>
+        </form>
+
+        <div id="taskList" class="task-list">
+            <!-- Tasks will be added here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                taskName: 'Task Name',
+                project: 'Project',
+                startTime: 'Start Time',
+                location: 'Location',
+                priority: 'Priority',
+                addTask: 'Add Task',
+                work: 'Work',
+                personal: 'Personal',
+                education: 'Education',
+                office: 'Office',
+                home: 'Home',
+                remote: 'Remote',
+                meetingRoom: 'Meeting Room',
+                lowPriority: 'Low Priority',
+                mediumPriority: 'Medium Priority',
+                highPriority: 'High Priority'
+            },
+            tr: {
+                taskName: 'Görev Adı',
+                project: 'Proje',
+                startTime: 'Başlangıç Saati',
+                location: 'Konum',
+                priority: 'Öncelik',
+                addTask: 'Görev Ekle',
+                work: 'İş',
+                personal: 'Kişisel',
+                education: 'Eğitim',
+                office: 'Ofis',
+                home: 'Ev',
+                remote: 'Uzaktan',
+                meetingRoom: 'Toplantı Odası',
+                lowPriority: 'Düşük Öncelik',
+                mediumPriority: 'Orta Öncelik',
+                highPriority: 'Yüksek Öncelik'
+            },
+            fr: {
+                taskName: 'Nom de la tâche',
+                project: 'Projet',
+                startTime: 'Heure de début',
+                location: 'Emplacement',
+                priority: 'Priorité',
+                addTask: 'Ajouter une tâche',
+                work: 'Travail',
+                personal: 'Personnel',
+                education: 'Éducation',
+                office: 'Bureau',
+                home: 'Maison',
+                remote: 'À distance',
+                meetingRoom: 'Salle de réunion',
+                lowPriority: 'Priorité basse',
+                mediumPriority: 'Priorité moyenne',
+                highPriority: 'Priorité haute'
+            },
+            es: {
+                taskName: 'Nombre de la tarea',
+                project: 'Proyecto',
+                startTime: 'Hora de inicio',
+                location: 'Ubicación',
+                priority: 'Prioridad',
+                addTask: 'Agregar tarea',
+                work: 'Trabajo',
+                personal: 'Personal',
+                education: 'Educación',
+                office: 'Oficina',
+                home: 'Casa',
+                remote: 'Remoto',
+                meetingRoom: 'Sala de reuniones',
+                lowPriority: 'Prioridad baja',
+                mediumPriority: 'Prioridad media',
+                highPriority: 'Prioridad alta'
+            },
+            de: {
+                taskName: 'Aufgabenname',
+                project: 'Projekt',
+                startTime: 'Startzeit',
+                location: 'Standort',
+                priority: 'Priorität',
+                addTask: 'Aufgabe hinzufügen',
+                work: 'Arbeit',
+                personal: 'Persönlich',
+                education: 'Bildung',
+                office: 'Büro',
+                home: 'Zuhause',
+                remote: 'Remote',
+                meetingRoom: 'Konferenzraum',
+                lowPriority: 'Niedrige Priorität',
+                mediumPriority: 'Mittlere Priorität',
+                highPriority: 'Hohe Priorität'
+            }
+        };
+
+        // Function to change language
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            
+            // Update labels
+            document.getElementById('nameLabel').textContent = t.taskName;
+            document.getElementById('projectLabel').textContent = t.project;
+            document.getElementById('timeLabel').textContent = t.startTime;
+            document.getElementById('locationLabel').textContent = t.location;
+            document.getElementById('priorityLabel').textContent = t.priority;
+            
+            // Update submit button
+            document.getElementById('submitBtn').innerHTML = `
+                <i class="fas fa-plus"></i>
+                ${t.addTask}
+            `;
+
+            // Update project options
+            document.getElementById('taskProject').innerHTML = `
+                <option value="work">${t.work}</option>
+                <option value="personal">${t.personal}</option>
+                <option value="education">${t.education}</option>
+            `;
+
+            // Update location options
+            document.getElementById('taskLocation').innerHTML = `
+                <option value="office">${t.office}</option>
+                <option value="home">${t.home}</option>
+                <option value="remote">${t.remote}</option>
+                <option value="meeting">${t.meetingRoom}</option>
+            `;
+
+            // Update priority options
+            document.getElementById('taskPriority').innerHTML = `
+                <option value="low">${t.lowPriority}</option>
+                <option value="medium">${t.mediumPriority}</option>
+                <option value="high">${t.highPriority}</option>
+            `;
+
+            // Save language preference
+            localStorage.setItem('selectedLanguage', lang);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set saved language or default to English
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            document.getElementById('languageSelect').value = savedLanguage;
+            changeLanguage(savedLanguage);
+
+            // Set current time
+            document.getElementById('taskTime').value = new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Theme switching
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    document.body.className = '';
+                    const theme = btn.dataset.theme;
+                    if (theme !== 'default') {
+                        document.body.classList.add(`theme-${theme}`);
+                    }
+                });
+            });
+
+            // Form submission
+            document.getElementById('taskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const taskData = {
+                    name: document.getElementById('taskName').value,
+                    project: document.getElementById('taskProject').value,
+                    time: document.getElementById('taskTime').value,
+                    location: document.getElementById('taskLocation').value,
+                    priority: document.getElementById('taskPriority').value
+                };
+
+                // Save task (you can implement storage logic here)
+                console.log('Task saved:', taskData);
+                
+                // Reset form
+                this.reset();
+                
+                // Reset time to current
+                document.getElementById('taskTime').value = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
