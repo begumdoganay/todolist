@@ -2,7 +2,6 @@
 
 A beautiful and elegant task management application with multiple themes and language support.
 
-![Task Manager Preview](screenshot.png)
 
 ## Features
 
